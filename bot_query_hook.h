@@ -18,7 +18,7 @@ ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t leng
 bool hook_sendto_function();
 bool unhook_sendto_function();
 
-void UTIL_ConsolePrintf( char *fmt, ... );
+void UTIL_ConsolePrintf( const char *fmt, ... );
 void BotReplaceConnectionTime(const char * name, float * timeslot);
 
 extern int bot_conntimes;
