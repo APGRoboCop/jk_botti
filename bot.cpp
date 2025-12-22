@@ -2894,7 +2894,7 @@ void BotThink(bot_t& pBot)
 		f_strafe_speed = calc.x;
 		pBot.f_move_speed = calc.y;
 
-		if (false)
+		if constexpr (false)
 		{
 			Vector v_angle = pEdict->v.v_angle;
 			v_angle.x = 0;

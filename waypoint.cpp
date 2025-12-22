@@ -138,7 +138,7 @@ static qboolean WaypointInBlockRadius(const Vector &origin)
 
 
 #ifdef _DEBUG
-static void WaypointDebug(void)
+static void WaypointDebug()
 {
    int y = 1, x = 1;
 
@@ -651,7 +651,7 @@ void WaypointAddLift(edict_t * pent, const Vector &start, const Vector &end)
    g_lifts_added++;
    g_waypoint_updated = TRUE;
 
-   if(false)
+   if constexpr (false)
    {
 	  UTIL_ConsolePrintf("%s\n", STRING(pent->v.classname));
 	  UTIL_ConsolePrintf(" - start : %4.1f, %4.1f, %4.1f", start.x, start.y, start.z);

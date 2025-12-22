@@ -366,7 +366,7 @@ void CSoundEnt :: Initialize ()
 // ISoundsInList - returns the number of sounds in the desired
 // sound list.
 //=========================================================
-int CSoundEnt :: ISoundsInList ( int iListType )
+int CSoundEnt :: ISoundsInList ( int iListType ) const
 {
 	int iThisSound;
 

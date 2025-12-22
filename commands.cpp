@@ -1110,13 +1110,13 @@ void ClientCommand( edict_t *pEntity )
 	  }
 	  else if (FStrEq(pcmd, "search"))
 	  {
-		 edict_t *pent = NULL;
+		 edict_t *pent = nullptr;
 		 float radius = 100;
 		 char str[80];
 
 		 ClientPrint(pEntity, HUD_PRINTNOTIFY, "searching...\n");
 
-		 while ((pent = UTIL_FindEntityInSphere( pent, pEntity->v.origin, radius )) != NULL)
+		 while ((pent = UTIL_FindEntityInSphere( pent, pEntity->v.origin, radius )) != nullptr)
 		 {
 			safevoid_snprintf(str, sizeof(str), "Found %s at %5.2f %5.2f %5.2f\n",
 					   STRING(pent->v.classname),

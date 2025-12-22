@@ -55,7 +55,7 @@ public:
 	static CSound*  GetEdictChannelSound( edict_t *pEdict, int iChannel );
 
 	BOOL		IsEmpty() const { return m_iActiveSound == SOUNDLIST_EMPTY; }
-	int		ISoundsInList ( int iListType );
+	int		ISoundsInList ( int iListType ) const;
 	int		IAllocSound ();
 	
 	int		m_iFreeSound;	// index of the first sound in the free sound list
