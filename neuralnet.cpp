@@ -418,11 +418,11 @@ static double scale_output(double max, double min, double output)
 // training
 int main()
 {
-	int i, j, k;
+	int i;
 	int rnd_idx;
 	double input[3];
 	double output[1];
-	const double scale[1] = {100};
+	constexpr double scale[1] = {100};
 	double diff = 0;
 
 	fast_random_seed(time(nullptr) ^ long(&diff) ^ long(&main));
@@ -436,9 +436,9 @@ int main()
 
 	CGenome *best_genome;
 
-	for (k = 0; k < 5000; k++) {
+	for (int k = 0; k < 5000; k++) {
 		//printf("k: %i\n", k);
-		for (j = 0; j < population.get_size(); j++) {
+		for (int j = 0; j < population.get_size(); j++) {
 			double foutput;
 			CGenome *genome = population.get_individual(j);
 

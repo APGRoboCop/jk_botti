@@ -135,14 +135,14 @@ extern bot_weapon_select_t weapon_select[NUM_OF_WEAPON_SELECTS];
 extern bot_fire_delay_t fire_delay[NUM_OF_WEAPON_SELECTS];
 extern bot_ammo_names_t ammo_names[];
 
-enum ammo_low_t {
+enum ammo_low_t : std::uint8_t {
    AMMO_NO = 1,
    AMMO_LOW = 2,
    AMMO_OK = 3,
 };
 
 // weapon ID values for Valve's Half-Life Deathmatch
-enum
+enum : std::uint8_t
 {
 	VALVE_WEAPON_CROWBAR = 1,
 	VALVE_WEAPON_GLOCK = 2,
@@ -162,7 +162,7 @@ enum
 };
 
 // weapon ID values for extra weapons from Gearbox's Opposing Force
-enum
+enum : std::uint8_t
 {
 	GEARBOX_WEAPON_GRAPPLE = 16,
 	GEARBOX_WEAPON_EAGLE = 17,
@@ -176,13 +176,21 @@ enum
 	GEARBOX_WEAPON_KNIFE = 25
 };
 
+// weapon ID values for extra weapons from HL: Arena - [APG]RoboCop[CL]
+enum : std::uint8_t
+{
+	ARENA_WEAPON_9MMSILENCED = 26,
+	ARENA_WEAPON_AUTOSHOTGUN = 27,
+	ARENA_WEAPON_BURSTRIFLE = 28,
+};
+
 // in normal gravity, how far the longjump hurls us
-enum
+enum : std::uint16_t
 {
 	LONGJUMP_DISTANCE = 540
 };
 
-enum
+enum : std::uint8_t
 {
 	VALVE_MAX_NORMAL_HEALTH = 100,
 	VALVE_MAX_NORMAL_BATTERY = 100,
