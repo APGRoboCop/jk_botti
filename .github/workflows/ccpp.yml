@@ -3,13 +3,13 @@ name: C/C++ CI
 on: 
   push:
     tags:
-      - 'v*' # Trigger release flow on tags like v1.0, v2.0
+      - 'v*' # Trigger release on tags like v1.0
     branches:
-      - '**' # Trigger build flow on all branches
+      - '**' # Trigger build on all branches
   pull_request:
 
 permissions:
-  contents: write # Required to create Releases
+  contents: write # Required for creating Releases
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4 # Updated to v4 (current standard)
+    - uses: actions/checkout@v4
 
     - name: Update package list for i386
       run: sudo dpkg --add-architecture i386 && sudo apt-get -y update
@@ -25,7 +25,7 @@ jobs:
     - name: Install packages
       run: sudo apt-get -y install build-essential g++-multilib gcc-mingw-w64 g++-mingw-w64
 
-    # Create a directory to keep artifacts safe from 'git clean'
+    # Create a safe directory for artifacts
     - name: Create dist directory
       run: mkdir -p dist
 
@@ -33,9 +33,9 @@ jobs:
     - name: make linux
       run: make
 
-    # Move the linux binary to dist/ immediately so it isn't deleted
+    # Move the specific .so file to dist
     - name: Stage Linux Artifact
-      run: mv bin/linux_executable dist/linux_binary # REPLACE with your actual output path/name
+      run: mv jk_botti_mm.so dist/jk_botti_mm.so
 
     # Clean everything EXCEPT the dist directory
     - name: cleanup 1
@@ -45,15 +45,14 @@ jobs:
     - name: make win32
       run: make OSTYPE=win32
 
-    # Move the windows binary to dist/
+    # Move the specific .dll file to dist
     - name: Stage Windows Artifact
-      run: mv bin/win32_executable.exe dist/windows_binary.exe # REPLACE with your actual output path/name
+      run: mv jk_botti_mm.dll dist/jk_botti_mm.dll
 
     - name: cleanup 2
       run: git clean -xdf -e dist/
 
     # --- Upload Artifacts (Workflow Run) ---
-    # This makes binaries downloadable from the Actions "Summary" page
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -61,7 +60,6 @@ jobs:
         path: dist/*
 
     # --- Create Release (Only on Tag) ---
-    # This creates a formal GitHub Release and attaches the binaries
     - name: Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
