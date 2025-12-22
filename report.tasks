@@ -1,0 +1,48 @@
+www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is available here: https://www.viva64.com/en/w/.
+/home/user/Dropbox/src/jk_botti/bot.cpp	832	err	V781 The value of the 'index' index is checked after it was used. Perhaps there is a mistake in program logic.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2119	err	V547 Expression is always true.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2157	err	V547 Expression is always true.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2336	warn	V560 A part of conditional expression is always true: !pBot.b_combat_longjump.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2364	warn	V560 A part of conditional expression is always true: !jump.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2364	warn	V560 A part of conditional expression is always true: !duck.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2364	warn	V560 A part of conditional expression is always true: !lj.
+/home/user/Dropbox/src/jk_botti/bot.cpp	2457	warn	V1051 Consider checking for misprints. It's possible that the 'pBot.f_combat_longjump' should be checked here.
+/home/user/Dropbox/src/jk_botti/bot_chat.cpp	98	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_chat.cpp	100	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_client.cpp	140	warn	V560 A part of conditional expression is always true: pSelect.
+/home/user/Dropbox/src/jk_botti/bot_combat.cpp	827	warn	V562 It's odd to compare a bool type value with a value of not bool type.
+/home/user/Dropbox/src/jk_botti/bot_combat.cpp	883	warn	V547 Expression 'pNewEnemy == __null' is always true.
+/home/user/Dropbox/src/jk_botti/bot_combat.cpp	1568	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
+/home/user/Dropbox/src/jk_botti/bot_config_init.cpp	54	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_config_init.cpp	56	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_config_init.cpp	94	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_config_init.cpp	96	warn	V557 Array underrun is possible. The value of 'length - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	594	warn	V560 A part of conditional expression is always false: weaponflags != 0.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	595	warn	V1048 The 'weaponflags' variable was assigned the same value.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	595	warn	V560 A part of conditional expression is always false: weaponflags != 0.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	656	err	V547 Expression 'index == - 1' is always true.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	761	warn	V1048 The 'pBot.curr_waypoint_index' variable was assigned the same value.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	937	err	V523 The 'then' statement is equivalent to the 'else' statement.
+/home/user/Dropbox/src/jk_botti/bot_navigate.cpp	1698	warn	V760 Two identical blocks of text were found. The second block begins from line 1710.
+/home/user/Dropbox/src/jk_botti/bot_query_hook.cpp	269	err	V501 There are identical sub-expressions to the left and to the right of the '&&' operator: * msg != 'W' && * msg != 'W'
+/home/user/Dropbox/src/jk_botti/bot_query_hook.cpp	286	warn	V560 A part of conditional expression is always false: is_mod != 1.
+/home/user/Dropbox/src/jk_botti/bot_query_hook_linux.cpp	109	warn	V1048 The 'is_sendto_hook_setup' variable was assigned the same value.
+/home/user/Dropbox/src/jk_botti/bot_weapons.cpp	822	warn	V557 Array underrun is possible. The value of 'dis_idx - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_weapons.cpp	827	warn	V557 Array underrun is possible. The value of 'dis_idx - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/bot_weapons.cpp	830	warn	V557 Array underrun is possible. The value of 'dis_idx - 1' index could reach -1.
+/home/user/Dropbox/src/jk_botti/commands.cpp	139	warn	V560 A part of conditional expression is always true: cfg_bot_record_size.
+/home/user/Dropbox/src/jk_botti/commands.cpp	161	warn	V701 realloc() possible leak: when realloc() fails in allocating memory, original pointer 'cfg_bot_record' is lost. Consider assigning realloc() to a temporary pointer.
+/home/user/Dropbox/src/jk_botti/commands.cpp	163	warn	V522 There might be dereferencing of a potential null pointer 'cfg_bot_record'. Check lines: 163, 161.
+/home/user/Dropbox/src/jk_botti/commands.cpp	794	warn	V560 A part of conditional expression is always true: (arg1 != __null).
+/home/user/Dropbox/src/jk_botti/safe_snprintf.cpp	40	err	V781 The value of the 'i' index is checked after it was used. Perhaps there is a mistake in program logic.
+/home/user/Dropbox/src/jk_botti/util.cpp	1025	warn	V1029 Numeric Truncation Error. Return value of the 'strlen' function is written to the 8-bit variable.
+/home/user/Dropbox/src/jk_botti/util.cpp	1030	err	V781 The value of the 'fieldstop' index is checked after it was used. Perhaps there is a mistake in program logic.
+/home/user/Dropbox/src/jk_botti/util.cpp	1034	err	V781 The value of the 'fieldstart' index is checked after it was used. Perhaps there is a mistake in program logic.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	902	warn	V1051 Consider checking for misprints. It's possible that the 'enemy_distance' should be checked here.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	1700	err	V547 Expression is always true.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2680	warn	V560 A part of conditional expression is always false.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2691	err	V547 Expression 'changed == 0' is always true.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2798	err	V547 Expression 'strcmp(header, "jkbotti_matrixA\\0") != 0' is always false.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2808	err	V575 The number of processed elements should be passed to the 'gzread' function as the third argument instead of buffer's size in bytes.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2822	err	V547 Expression 'strcmp(header, "jkbotti_matrixB\\0") != 0' is always false.
+/home/user/Dropbox/src/jk_botti/waypoint.cpp	2832	err	V575 The number of processed elements should be passed to the 'gzread' function as the third argument instead of buffer's size in bytes.

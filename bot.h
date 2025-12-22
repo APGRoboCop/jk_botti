@@ -7,7 +7,7 @@
 #ifndef BOT_H
 #define BOT_H
 
-#include <ctype.h>
+#include <cctype>
 #include "safe_snprintf.h"
 
 // Manual branch optimization for GCC 3.0.0 and newer
@@ -45,7 +45,7 @@ typedef int BOOL;
 
 
 // global defines
-#define PLAYER_SEARCH_RADIUS (64 - 4.0)
+#define PLAYER_SEARCH_RADIUS (64 - 4.0f)
 
 
 // define a new bit flag for bot identification
@@ -114,8 +114,8 @@ typedef struct
 typedef struct breakable_list_s 
 {
    qboolean inuse;
-   
-   struct breakable_list_s * next;
+
+   breakable_list_s * next;
    qboolean material_breakable;
    edict_t *pEdict;
 } breakable_list_t;

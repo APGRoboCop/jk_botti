@@ -7,10 +7,10 @@ public:
 	int m_num_inputs;
 	double *m_weights;
 
-	CNeuron(void): m_num_inputs(0), m_weights(NULL) {}
+	CNeuron(): m_num_inputs(0), m_weights(nullptr) {}
 	CNeuron(int num_inputs, double in_weights[]);
 
-	int get_num_inputs(void) const { return m_num_inputs; }
+	int get_num_inputs() const { return m_num_inputs; }
 
 	static int calc_needed_weights(int num_inputs);
 };
@@ -23,10 +23,10 @@ public:
 	int m_num_neurons;
 	CNeuron *m_neurons;
 
-	CNeuronLayer(void): m_num_neurons(0), m_neurons(NULL) {}
+	CNeuronLayer(): m_num_neurons(0), m_neurons(nullptr) {}
 	CNeuronLayer(int num_neurons, int num_inputs_per_neuron, CNeuron in_neurons[], double in_weights[]);
 
-	int get_num_neurons(void) const { return m_num_neurons; }
+	int get_num_neurons() const { return m_num_neurons; }
 
 	static int calc_needed_weights(int num_neurons, int num_inputs_per_neuron);
 };
@@ -58,19 +58,19 @@ private:
 
 public:
 	CNeuralNet(int num_inputs, int num_outputs, int num_hidden, int num_neurons_per_hidden);
-	~CNeuralNet(void);
+	~CNeuralNet();
 
-	int get_num_weights(void) const { return m_num_weights; }
-	int get_num_inputs(void) const { return m_num_inputs; }
-	int get_num_outputs(void) const { return m_num_outputs; }
+	int get_num_weights() const { return m_num_weights; }
+	int get_num_inputs() const { return m_num_inputs; }
+	int get_num_outputs() const { return m_num_outputs; }
 
-	void reset_weights_random(void);
+	void reset_weights_random() const;
 	double *get_weights(double weights[]) const;
-	void put_weights(double weights[]);
+	void put_weights(double weights[]) const;
 
 	double *run(const double inputs[], double outputs[]) const;
 	double *run(const double inputs[], double outputs[], const double scales[]) const;
 
-	void print(void) const;
+	void print() const;
 };
 

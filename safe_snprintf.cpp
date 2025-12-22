@@ -5,14 +5,14 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 #include <memory.h>
 #include <malloc.h>
-#include <limits.h>
+#include <climits>
 
 #include "safe_snprintf.h"
 
@@ -33,15 +33,15 @@ char * safe_strcopy(char * dst, size_t dst_size, const char *src)
    size_t i;
    
    if(unlikely(!src))
-      src = "(null)";
+	  src = "(null)";
    
    for(i = 0; likely(src[i] != '\0') && likely(i < dst_size); i++)
-      dst[i] = src[i];
+	  dst[i] = src[i];
    
    if(likely(i < dst_size))
-   	dst[i] = '\0';
+	dst[i] = '\0';
    else if(likely(i == dst_size))
-   	dst[i-1] = '\0';
+	dst[i-1] = '\0';
    
    return dst;
 }
@@ -65,7 +65,7 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap)
 		return(0);
 	
 	// The supplied count may be big enough. Try to use the library
-     	// vsnprintf, fixing up the case where the library function
+		// vsnprintf, fixing up the case where the library function
 	// neglects to terminate with '/0'.
 	if(n > 0)
 	{
@@ -81,7 +81,7 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap)
 		if(res > 0) {
 			if((unsigned)res == n)
 				s[res - 1] = 0;
-	  		return(res);
+			return(res);
 		}
 		
 		// If n is already larger than INT_MAX, increasing it won't
@@ -101,8 +101,8 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap)
 		return(-1);
 	
 	va_copy(ap, src_ap);
-  	res = vsnprintf(tmpbuf, bufsize, format, ap);
-  	va_end(ap);
+	res = vsnprintf(tmpbuf, bufsize, format, ap);
+	va_end(ap);
 	
 	// The test for bufsize limit is probably not necesary
 	// with 2GB address space limit, since, in practice, malloc will
@@ -152,9 +152,7 @@ int safe_snprintf(char* s, size_t n, const char* format, ...)
 #endif
 
 void safevoid_vsnprintf(char* s, size_t n, const char *format, va_list ap) 
-{ 
-	int res;
-	
+{
 	if(unlikely(!s) || unlikely(n <= 0))
 		return;
 	
@@ -164,12 +162,12 @@ void safevoid_vsnprintf(char* s, size_t n, const char *format, va_list ap)
 		s[0]=0;
 		return;
 	}
-	
-	res = vsnprintf(s, n, format, ap);
+
+	const int res = vsnprintf(s, n, format, ap);
 	
 	// w32api returns -1 on too long write, glibc returns number of bytes it could have written if there were enough space
 	// w32api doesn't write null at all, some buggy glibc don't either
-	if(res < 0 || (size_t)res >= n)
+	if(res < 0 || static_cast<size_t>(res) >= n)
 		s[n-1]=0;
 }
 

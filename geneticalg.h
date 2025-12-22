@@ -8,12 +8,12 @@ public:
 
 	double m_fitness;
 
-	CGenome(void): m_genome_length(0), m_genes(NULL), m_fitness(-9999999999.9) {}
+	CGenome(): m_genome_length(0), m_genes(nullptr), m_fitness(-9999999999.9) {}
 	CGenome(double in_genes[], int genome_length, double fitness): m_genome_length(genome_length), m_genes(in_genes), m_fitness(fitness) {}
 
 	void copy_from(const CGenome &from);
 
-	int length(void) const { return m_genome_length; }
+	int length() const { return m_genome_length; }
 };
 
 /*************************************************************** CPopulation */
@@ -28,16 +28,16 @@ private:
 	double *m_genepool;
 
 public:
-	CPopulation(void): m_pop_size(0), m_individuals(NULL), m_genome_length(0), m_pool_size(0), m_genepool(NULL) {}
+	CPopulation(): m_pop_size(0), m_individuals(nullptr), m_genome_length(0), m_pool_size(0), m_genepool(nullptr) {}
 	CPopulation(int population_size, int genome_length);
 
-	void free_mem(void);
+	void free_mem();
 
-	int get_size(void) const { return m_pop_size; }
-	int get_genome_length(void) const { return m_genome_length; }
+	int get_size() const { return m_pop_size; }
+	int get_genome_length() const { return m_genome_length; }
 	double get_fitness_of(int i) const { return m_individuals[i].m_fitness; }
-	CGenome *get_individual(int i) { return &m_individuals[i]; }
-	CGenome *get_fittest_individual(void);
+	CGenome *get_individual(int i) const { return &m_individuals[i]; }
+	CGenome *get_fittest_individual();
 };
 
 /********************************************************* CGeneticAlgorithm */
@@ -75,17 +75,17 @@ private:
 
 	void crossover(CGenome &parent1, CGenome &parent2, CGenome &child1, CGenome &child2);
 	void mutate(CGenome &individual);
-	CGenome *get_individual_random_weighted(void);
-	CGenome *get_individual_random(void);
+	CGenome *get_individual_random_weighted();
+	CGenome *get_individual_random();
 
 	// use to introduce elitism
-	int grab_num_best(const int num_best, const int num_copies, CPopulation &population, int pop_pos);
+	int grab_num_best(int num_best, int num_copies, CPopulation &population, int pop_pos);
 
 	// use to introduce randomness
 	int add_random_genome(CPopulation &population, int pop_pos);
 
-	void calculate_fitness_values(void);
-	void reset_fitness_values(void);
+	void calculate_fitness_values();
+	void reset_fitness_values();
 
 	int get_crossover_interleave(int num_genes);
 
@@ -93,7 +93,7 @@ private:
 
 public:
 	CGeneticAlgorithm(double mutation_rate, double crossover_rate, int crossover_interleave = 0):
-		m_population(NULL),
+		m_population(nullptr),
 		m_total_fitness(0),
 		m_best_fitness(0),
 		m_average_fitness(0),
@@ -112,7 +112,7 @@ public:
 
 	CPopulation *epoch(CPopulation &old_population, CPopulation &new_population);
 
-	CPopulation *get_population(void) { return m_population; }
+	CPopulation *get_population() const { return m_population; }
 
 	int get_generation() const { return m_generation; }
 };

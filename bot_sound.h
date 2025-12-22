@@ -9,7 +9,7 @@
 
 #define	MAX_WORLD_SOUNDS	1024 	// maximum number of sounds handled by the world at one time.
 
-#define SOUNDLIST_EMPTY		-1
+#define SOUNDLIST_EMPTY		(-1)
 
 #define SOUNDLISTTYPE_FREE	1	// identifiers passed to functions that can operate on either list, to indicate which list to operate on.
 #define SOUNDLISTTYPE_ACTIVE 	2
@@ -20,8 +20,8 @@
 class CSound
 {
 public:
-	void	Clear ( void );
-	void	Reset ( void );
+	void	Clear ();
+	void	Reset ();
 
 	Vector	  m_vecOrigin;		// sound's location in space
 	int	  m_iVolume;		// how loud the sound is
@@ -42,21 +42,21 @@ public:
 class CSoundEnt
 {
 public:
-	void 		Spawn( void );
-	void 		Think( void );
-	void 		Initialize ( void );
+	void 		Spawn();
+	void 		Think();
+	void 		Initialize ();
 	
 	static void	InsertSound ( edict_t * pEdict, int channel, const Vector &vecOrigin, int iVolume, float flDuration, int iBotOwner );
 	static void	FreeSound ( int iSound, int iPrevious );
-	static int	ActiveList( void );// return the head of the active list
-	static int	FreeList( void );// return the head of the free list
+	static int	ActiveList();// return the head of the active list
+	static int	FreeList();// return the head of the free list
 	static CSound*	SoundPointerForIndex( int iIndex );// return a pointer for this index in the sound list
 	static int	ClientSoundIndex ( edict_t *pClient );
 	static CSound*  GetEdictChannelSound( edict_t *pEdict, int iChannel );
 
-	BOOL		IsEmpty( void ) { return m_iActiveSound == SOUNDLIST_EMPTY; }
+	BOOL		IsEmpty() const { return m_iActiveSound == SOUNDLIST_EMPTY; }
 	int		ISoundsInList ( int iListType );
-	int		IAllocSound ( void );
+	int		IAllocSound ();
 	
 	int		m_iFreeSound;	// index of the first sound in the free sound list
 	int		m_iActiveSound; // indes of the first sound in the active sound list

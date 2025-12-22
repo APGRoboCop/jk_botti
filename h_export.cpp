@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>

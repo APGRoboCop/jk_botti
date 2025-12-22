@@ -268,7 +268,8 @@ void CGeneticAlgorithm::calculate_fitness_values(void)
 	m_fittest_individual = 0;
 	m_best_fitness = highest;
 
-	lowest = m_population->get_fitness_of(0);	m_worst_fitness = lowest;
+	lowest = m_population->get_fitness_of(0);
+	m_worst_fitness = lowest;
 
 	m_total_fitness = m_population->get_fitness_of(0);
 
@@ -281,7 +282,10 @@ void CGeneticAlgorithm::calculate_fitness_values(void)
 		}
 
 		// update worst if necessary
-		if (m_population->get_fitness_of(i) < lowest) {			lowest = m_population->get_fitness_of(i);			m_worst_fitness = lowest;		}
+		if (m_population->get_fitness_of(i) < lowest) {
+			lowest = m_population->get_fitness_of(i);
+			m_worst_fitness = lowest;
+		}
 		m_total_fitness += m_population->get_fitness_of(i);
 	}
 

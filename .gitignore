@@ -9,3 +9,12 @@ zlib/Makefile
 *.a
 zlib/example
 zlib/minigzip
+.vs/*
+bot_query_hook_win32.cpp.PVS-Studio.cfg
+bot_query_hook_win32.cpp.PVS-Studio.cmd
+bot_query_hook_win32.PVS-Studio.i
+*.log
+Makefile-PVS
+PVS-Studio.cfg
+Release/*
+*.ipch

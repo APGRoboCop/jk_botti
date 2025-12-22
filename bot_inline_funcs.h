@@ -7,7 +7,7 @@
 #ifndef BOT_INLINE_FUNCS
 #define BOT_INLINE_FUNCS
 
-#include <inttypes.h>
+#include <cinttypes>
 #include <sys/time.h>
 
 // Manual branch optimization for GCC 3.0.0 and newer
@@ -20,14 +20,14 @@
 #endif
 
 //
-inline Vector GetGunPosition(edict_t *pEdict)
+inline Vector GetGunPosition(const edict_t* pEdict)
 {
    return (pEdict->v.origin + pEdict->v.view_ofs);
 }
 
 inline void UTIL_SelectItem(edict_t *pEdict, const char *item_name)
 {
-   FakeClientCommand(pEdict, item_name, NULL, NULL);
+   FakeClientCommand(pEdict, item_name, nullptr, nullptr);
 }
 
 // Overloaded to add IGNORE_GLASS
@@ -58,26 +58,22 @@ inline void UTIL_TraceDuck( const Vector &vecStart, const Vector &vecEnd, IGNORE
 
 inline edict_t *UTIL_FindEntityInSphere( edict_t *pentStart, const Vector &vecCenter, float flRadius )
 {
-   edict_t  *pentEntity;
-
-   pentEntity = FIND_ENTITY_IN_SPHERE( pentStart, vecCenter, flRadius);
+	edict_t* pentEntity = FIND_ENTITY_IN_SPHERE(pentStart, vecCenter, flRadius);
 
    if (likely(!FNullEnt(pentEntity)))
       return pentEntity;
 
-   return NULL;
+   return nullptr;
 }
 
 inline edict_t *UTIL_FindEntityByString( edict_t *pentStart, const char *szKeyword, const char *szValue )
 {
-   edict_t *pentEntity;
-
-   pentEntity = FIND_ENTITY_BY_STRING( pentStart, szKeyword, szValue );
+	edict_t* pentEntity = FIND_ENTITY_BY_STRING(pentStart, szKeyword, szValue);
 
    if (likely(!FNullEnt(pentEntity)))
       return pentEntity;
    
-   return NULL;
+   return nullptr;
 }
 
 inline edict_t *UTIL_FindEntityByClassname( edict_t *pentStart, const char *szName )
@@ -126,7 +122,7 @@ inline Vector UTIL_GetOriginWithExtent(bot_t &pBot, edict_t *pTarget)
 
 inline void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount )
 {
-   PARTICLE_EFFECT( vecOrigin, vecDirection, (float)ulColor, (float)ulCount );
+   PARTICLE_EFFECT( vecOrigin, vecDirection, float(ulColor), float(ulCount) );
 }
 
 inline qboolean FIsClassname(edict_t * pent, const char * cname)
@@ -141,13 +137,13 @@ inline qboolean FIsClassname(const char * cname, edict_t * pent)
 
 inline qboolean FVisible( const Vector &vecOrigin, edict_t *pEdict, edict_t * pOrigin )
 {
-   edict_t * pHit = NULL;
-   return(FVisible(vecOrigin, pEdict, &pHit) || (pOrigin != NULL && pHit == pOrigin));
+   edict_t * pHit = nullptr;
+   return(FVisible(vecOrigin, pEdict, &pHit) || (pOrigin != nullptr && pHit == pOrigin));
 }
 
 inline qboolean FVisible( const Vector &vecOrigin, edict_t *pEdict )
 {
-   return(FVisible(vecOrigin, pEdict, (edict_t **)NULL));
+   return(FVisible(vecOrigin, pEdict, (edict_t **)nullptr));
 }
 
 #endif /*BOT_INLINE_FUNCS*/

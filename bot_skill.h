@@ -68,4 +68,4 @@ typedef struct
 
 extern bot_skill_settings_t skill_settings[5];
 
-void ResetSkillsToDefault(void);
+void ResetSkillsToDefault();

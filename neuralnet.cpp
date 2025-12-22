@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
 #include <memory.h>
-#include <math.h>
+#include <cmath>
 
 #include "neuralnet.h"
 #include "geneticalg.h"
@@ -26,13 +26,13 @@ static int get_random_int(int x,int y)
 }
 
 // return random value in range 0 < n < 1
-static double get_random(void)
+static double get_random()
 {
-	return RANDOM_FLOAT2(0.0, 1.0);
+	return RANDOM_FLOAT2(0.0f, 1.0f);
 }
 
 // return random value in range -1 < n < 1
-static double get_random_weight(void)
+static double get_random_weight()
 {
 	return get_random() - get_random();
 }
@@ -55,10 +55,8 @@ CNeuronLayer::CNeuronLayer(int num_neurons, int num_inputs_per_neuron, CNeuron i
 	m_num_neurons(num_neurons),
 	m_neurons(in_neurons)
 {
-	int i, weight_pos;
-
-	weight_pos = 0;
-	for (i = 0; i < m_num_neurons; i++) {
+	int weight_pos = 0;
+	for (int i = 0; i < m_num_neurons; i++) {
 		m_neurons[i] = CNeuron(num_inputs_per_neuron, &in_weights[weight_pos]);
 		weight_pos += num_inputs_per_neuron;
 	}
@@ -80,13 +78,13 @@ CNeuralNet::CNeuralNet(int num_inputs, int num_outputs, int num_hidden, int num_
 	m_bias(-1.0),
 	m_activation_response(1.0),
 	m_num_layers(num_hidden + 1), // hidden + output
-	m_layers(NULL),
+	m_layers(nullptr),
 	m_num_weights(0),
-	m_weights(NULL),
+	m_weights(nullptr),
 	m_num_neurons(0),
-	m_neurons(NULL)
+	m_neurons(nullptr)
 {
-	int i, j, weight_pos, neuron_pos; 
+	int i; 
 
 	if (m_num_layers == 0)
 		return;
@@ -101,11 +99,11 @@ CNeuralNet::CNeuralNet(int num_inputs, int num_outputs, int num_hidden, int num_
 	}
 
 	// create network wide weight array
-	m_weights = (double *)calloc(1, sizeof(double) * m_num_weights);
+	m_weights = static_cast<double*>(calloc(1, sizeof(double) * m_num_weights));
 	reset_weights_random();
 
 	// create network wide neuron array
-	m_neurons = (CNeuron *)calloc(1, sizeof(CNeuron) * (m_num_outputs + m_num_neurons_per_hidden * m_num_hidden));
+	m_neurons = static_cast<CNeuron*>(calloc(1, sizeof(CNeuron) * (m_num_outputs + m_num_neurons_per_hidden * m_num_hidden)));
 
 	// create neuron layers
 	m_layers = new CNeuronLayer[m_num_layers];
@@ -116,8 +114,8 @@ CNeuralNet::CNeuralNet(int num_inputs, int num_outputs, int num_hidden, int num_
 	} else {
 		// create first hidden layer
 		m_layers[0] = CNeuronLayer(m_num_neurons_per_hidden, m_num_inputs, m_neurons, m_weights);
-		weight_pos = CNeuronLayer::calc_needed_weights(m_num_neurons_per_hidden, m_num_inputs);
-		neuron_pos = m_num_neurons_per_hidden;
+		int weight_pos = CNeuronLayer::calc_needed_weights(m_num_neurons_per_hidden, m_num_inputs);
+		int neuron_pos = m_num_neurons_per_hidden;
 
 		// create inner hidden layers
 		for (i = 1; i < m_num_layers - 1; i++) {
@@ -136,68 +134,60 @@ CNeuralNet::CNeuralNet(int num_inputs, int num_outputs, int num_hidden, int num_
 	for (i = 0; i < m_num_layers; i++) {
 		if (m_widest_layer < m_layers[i].get_num_neurons())
 			m_widest_layer = m_layers[i].get_num_neurons();
-		for (j = 0; j < m_layers[i].get_num_neurons(); j++)
+		for (int j = 0; j < m_layers[i].get_num_neurons(); j++)
 			if (m_widest_weight_array < m_layers[i].m_neurons[j].get_num_inputs())
 				m_widest_weight_array = m_layers[i].m_neurons[j].get_num_inputs();
 	}
 }
 
 // destructor, release memory
-CNeuralNet::~CNeuralNet(void)
+CNeuralNet::~CNeuralNet()
 {
 	if (m_weights) {
 		free(m_weights);
-		m_weights = NULL;
+		m_weights = nullptr;
 	}
 
 	if (m_layers) {
 		delete[] m_layers;
-		m_layers = NULL;
+		m_layers = nullptr;
 	}
 
 	if (m_neurons) {
 		free(m_neurons);
-		m_neurons = NULL;
+		m_neurons = nullptr;
 	}
 }
 
 // reset neuron weights to random
-void CNeuralNet::reset_weights_random(void)
+void CNeuralNet::reset_weights_random() const
 {
-	int i;
-
-	for (i = 0; i < m_num_weights; i++)
+	for (int i = 0; i < m_num_weights; i++)
 		m_weights[i] = get_random_weight();
 }
 
 // weights must have array size of m_num_weights
 double *CNeuralNet::get_weights(double weights[]) const
 {
-	int i;
-
-	for (i = 0; i < m_num_weights; i++)
+	for (int i = 0; i < m_num_weights; i++)
 		weights[i] = m_weights[i];
 
 	return weights;
 }
 
 // weights must have array size of m_num_weights, allocated by caller
-void CNeuralNet::put_weights(double weights[])
+void CNeuralNet::put_weights(double weights[]) const
 {
-	int i;
-
-	for (i = 0; i < m_num_weights; i++)
+	for (int i = 0; i < m_num_weights; i++)
 		m_weights[i] = weights[i];
 }
 
 static double expanded_sigmoid(double activation, double response = 1.0)
 {
-	double s;
-
 	// input activation is -1..1, convert to 0..1
 	activation = (activation + 1) / 2;
 
-	s = 1 / ( 1 + exp(-activation / response));
+	const double s = 1 / (1 + exp(-activation / response));
 
 	// s is 0..1, convert to -1..1
 	return (s * 2) - 1;
@@ -205,21 +195,20 @@ static double expanded_sigmoid(double activation, double response = 1.0)
 
 double *CNeuralNet::run(const double inputs[], double outputs[]) const
 {
-	return run(inputs, outputs, NULL);
+	return run(inputs, outputs, nullptr);
 }
 
 double *CNeuralNet::run(const double inputs[], double outputs[], const double scales[]) const
 {
 	int i;
-	double *ptr1, *ptr2, *out;
 
 	if (m_num_layers < 1)
-		return NULL;
+		return nullptr;
 
-	ptr1 = (double*)alloca(m_widest_layer * sizeof(double));
-	ptr2 = (double*)alloca(m_widest_layer * sizeof(double));
+	double* ptr1 = static_cast<double*>(alloca(m_widest_layer * sizeof(double)));
+	double* ptr2 = static_cast<double*>(alloca(m_widest_layer * sizeof(double)));
 
-	out = run_internal(inputs, outputs, ptr1, ptr2);
+	double* out = run_internal(inputs, outputs, ptr1, ptr2);
 
 	if (scales)
 		for (i = 0; i < m_num_outputs; i++)
@@ -236,8 +225,8 @@ double *CNeuralNet::run(const double inputs[], double outputs[], const double sc
 // ptr1 and ptr2 are temporary buffers
 double *CNeuralNet::run_internal(const double orig_inputs[], double target_outputs[], double *ptr1, double *ptr2) const
 {
-	int i, j, k, in_size, out_size = 0;
-	double *outputs = NULL;
+	int in_size, out_size = 0;
+	double *outputs = nullptr;
 	const double *inputs;
 	bool ptr1_used = false, ptr2_used = false;
 
@@ -245,13 +234,13 @@ double *CNeuralNet::run_internal(const double orig_inputs[], double target_outpu
 	in_size = m_num_inputs;
 
 	// walk through all layers
-	for (i = 0; i < m_num_layers; i++) {
+	for (int i = 0; i < m_num_layers; i++) {
 		const CNeuronLayer &cur_layer = m_layers[i];
 
 		if (likely(i > 0)) {
 			// free old input slot
-			ptr1_used = !(inputs == ptr1) & ptr1_used;
-			ptr2_used = !(inputs == ptr2) & ptr2_used;
+			ptr1_used = inputs != ptr1 & ptr1_used;
+			ptr2_used = inputs != ptr2 & ptr2_used;
 
 			inputs = outputs;
 			in_size = out_size;
@@ -269,12 +258,12 @@ double *CNeuralNet::run_internal(const double orig_inputs[], double target_outpu
 		}
 
 		// walk through all neurons in current layer
-		for (j = 0; j < cur_layer.get_num_neurons(); j++) {
+		for (int j = 0; j < cur_layer.get_num_neurons(); j++) {
 			const CNeuron &cur_neuron = cur_layer.m_neurons[j];
 			double sum = 0;
 
 			// for each weight
-			for (k = 0; k < cur_neuron.get_num_inputs() - 1; k++)
+			for (int k = 0; k < cur_neuron.get_num_inputs() - 1; k++)
 				//sum the weights x inputs
 				sum += cur_neuron.m_weights[k] * inputs[k];
 
@@ -288,18 +277,16 @@ double *CNeuralNet::run_internal(const double orig_inputs[], double target_outpu
 	return outputs;
 }
 
-void CNeuralNet::print(void) const
+void CNeuralNet::print() const
 {
-	int i, j, k;
-
-	for (i = 0; i < m_num_layers; i++) {
+	for (int i = 0; i < m_num_layers; i++) {
 		printf("layer [%i] neurons[%i]:\n", i, m_layers[i].get_num_neurons());
 
-		for (j = 0; j < m_layers[i].get_num_neurons(); j++) {
+		for (int j = 0; j < m_layers[i].get_num_neurons(); j++) {
 			printf("  neuron [%i:%i] inputs[%i]:\n", i, j, m_layers[i].m_neurons[j].get_num_inputs());
 
 			printf("    ");
-			for (k = 0; k < m_layers[i].m_neurons[j].get_num_inputs(); k++) {
+			for (int k = 0; k < m_layers[i].m_neurons[j].get_num_inputs(); k++) {
 				printf("[%f] ", m_layers[i].m_neurons[j].m_weights[k]);
 			}
 			printf("\n");
@@ -435,10 +422,10 @@ int main()
 	int rnd_idx;
 	double input[3];
 	double output[1];
-	double scale[1] = {100};
+	const double scale[1] = {100};
 	double diff = 0;
 
-	fast_random_seed(time(0) ^ (long)&diff ^ (long)&main);
+	fast_random_seed(time(nullptr) ^ long(&diff) ^ long(&main));
 
 	CNeuralNet *nnet = new CNeuralNet(1, 1, 1, 4);
 	CPopulation population = CPopulation(25, nnet->get_num_weights());
@@ -452,14 +439,14 @@ int main()
 	for (k = 0; k < 5000; k++) {
 		//printf("k: %i\n", k);
 		for (j = 0; j < population.get_size(); j++) {
-			double x, y, z, foutput;
+			double foutput;
 			CGenome *genome = population.get_individual(j);
 
 			nnet->put_weights(genome->m_genes);
 
-			for (x = -0.5; x <= 4.5; x += 1) {
-				for (y = -0.5; y <= 4.5; y += 1) {
-					for (z = -0.5; z <= 4.5; z += 1) {
+			for (double x = -0.5; x <= 4.5; x += 1) {
+				for (double y = -0.5; y <= 4.5; y += 1) {
+					for (double z = -0.5; z <= 4.5; z += 1) {
 						input[0] = x;
 						input[1] = y;
 						input[2] = z;
@@ -499,7 +486,7 @@ int main()
 		}
 
 		if (!(k % 100)) {
-			CGenome *genome = population.get_fittest_individual();
+			const CGenome *genome = population.get_fittest_individual();
 
 			nnet->put_weights(genome->m_genes);
 			nnet->run(input, output);
@@ -523,7 +510,7 @@ int main()
 		}
 	}
 
-	CGenome *genome = population.get_fittest_individual();
+	const CGenome *genome = population.get_fittest_individual();
 
 	nnet->put_weights(genome->m_genes);
 	nnet->run(input, output);

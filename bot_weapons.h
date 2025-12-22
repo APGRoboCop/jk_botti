@@ -142,40 +142,52 @@ enum ammo_low_t {
 };
 
 // weapon ID values for Valve's Half-Life Deathmatch
-#define VALVE_WEAPON_CROWBAR       1
-#define VALVE_WEAPON_GLOCK         2
-#define VALVE_WEAPON_PYTHON        3
-#define VALVE_WEAPON_MP5           4
-#define VALVE_WEAPON_CHAINGUN      5
-#define VALVE_WEAPON_CROSSBOW      6
-#define VALVE_WEAPON_SHOTGUN       7
-#define VALVE_WEAPON_RPG           8
-#define VALVE_WEAPON_GAUSS         9
-#define VALVE_WEAPON_EGON         10
-#define VALVE_WEAPON_HORNETGUN    11
-#define VALVE_WEAPON_HANDGRENADE  12
-#define VALVE_WEAPON_TRIPMINE     13
-#define VALVE_WEAPON_SATCHEL      14
-#define VALVE_WEAPON_SNARK        15
+enum
+{
+	VALVE_WEAPON_CROWBAR = 1,
+	VALVE_WEAPON_GLOCK = 2,
+	VALVE_WEAPON_PYTHON = 3,
+	VALVE_WEAPON_MP5 = 4,
+	VALVE_WEAPON_CHAINGUN = 5,
+	VALVE_WEAPON_CROSSBOW = 6,
+	VALVE_WEAPON_SHOTGUN = 7,
+	VALVE_WEAPON_RPG = 8,
+	VALVE_WEAPON_GAUSS = 9,
+	VALVE_WEAPON_EGON = 10,
+	VALVE_WEAPON_HORNETGUN = 11,
+	VALVE_WEAPON_HANDGRENADE = 12,
+	VALVE_WEAPON_TRIPMINE = 13,
+	VALVE_WEAPON_SATCHEL = 14,
+	VALVE_WEAPON_SNARK = 15
+};
 
 // weapon ID values for extra weapons from Gearbox's Opposing Force
-#define GEARBOX_WEAPON_GRAPPLE       16
-#define GEARBOX_WEAPON_EAGLE         17
-#define GEARBOX_WEAPON_PIPEWRENCH    18
-#define GEARBOX_WEAPON_M249          19
-#define GEARBOX_WEAPON_DISPLACER     20
-#define GEARBOX_WEAPON_UNKNOWN21     21
-#define GEARBOX_WEAPON_SHOCKRIFLE    22
-#define GEARBOX_WEAPON_SPORELAUNCHER 23
-#define GEARBOX_WEAPON_SNIPERRIFLE   24
-#define GEARBOX_WEAPON_KNIFE         25
+enum
+{
+	GEARBOX_WEAPON_GRAPPLE = 16,
+	GEARBOX_WEAPON_EAGLE = 17,
+	GEARBOX_WEAPON_PIPEWRENCH = 18,
+	GEARBOX_WEAPON_M249 = 19,
+	GEARBOX_WEAPON_DISPLACER = 20,
+	GEARBOX_WEAPON_UNKNOWN21 = 21,
+	GEARBOX_WEAPON_SHOCKRIFLE = 22,
+	GEARBOX_WEAPON_SPORELAUNCHER = 23,
+	GEARBOX_WEAPON_SNIPERRIFLE = 24,
+	GEARBOX_WEAPON_KNIFE = 25
+};
 
 // in normal gravity, how far the longjump hurls us
-#define LONGJUMP_DISTANCE	540
+enum
+{
+	LONGJUMP_DISTANCE = 540
+};
 
-#define VALVE_MAX_NORMAL_HEALTH    100
-#define VALVE_MAX_NORMAL_BATTERY   100
-#define VALVE_HORNET_MAX_CARRY      8
+enum
+{
+	VALVE_MAX_NORMAL_HEALTH = 100,
+	VALVE_MAX_NORMAL_BATTERY = 100,
+	VALVE_HORNET_MAX_CARRY = 8
+};
 
 typedef struct
 {
@@ -207,19 +219,19 @@ qboolean BotCanUseWeapon(bot_t &pBot, const bot_weapon_select_t &select);
 
 ammo_low_t BotPrimaryAmmoLow(bot_t &pBot, const bot_weapon_select_t &select);
 ammo_low_t BotSecondaryAmmoLow(bot_t &pBot, const bot_weapon_select_t &select);
-int BotGetLowAmmoFlags(bot_t &pBot, int *weapon_flags, const qboolean OnlyCarrying);
-qboolean BotAllWeaponsRunningOutOfAmmo(bot_t &pBot, const qboolean GoodWeaponsOnly);
+int BotGetLowAmmoFlags(bot_t &pBot, int *weapon_flags, qboolean OnlyCarrying);
+qboolean BotAllWeaponsRunningOutOfAmmo(bot_t &pBot, qboolean GoodWeaponsOnly);
 
 void BotSelectAttack(bot_t &pBot, const bot_weapon_select_t &select, qboolean &use_primary, qboolean &use_secondary);
 
 qboolean IsValidWeaponChoose(bot_t &pBot, const bot_weapon_select_t &select);
-qboolean IsValidPrimaryAttack(bot_t &pBot, const bot_weapon_select_t &select, const float distance, const float height, const qboolean always_in_range);
-qboolean IsValidSecondaryAttack(bot_t &pBot, const bot_weapon_select_t &select, const float distance, const float height, const qboolean always_in_range);
+qboolean IsValidPrimaryAttack(bot_t &pBot, const bot_weapon_select_t &select, float distance, float height, qboolean always_in_range);
+qboolean IsValidSecondaryAttack(bot_t &pBot, const bot_weapon_select_t &select, float distance, float height, qboolean always_in_range);
 
-int BotGetBetterWeaponChoice(bot_t &pBot, const bot_weapon_select_t &current, const bot_weapon_select_t *pSelect, const float distance, const float height, qboolean *use_primary, qboolean *use_secondary);
+int BotGetBetterWeaponChoice(bot_t &pBot, const bot_weapon_select_t &current, const bot_weapon_select_t *pSelect, float distance, float height, qboolean *use_primary, qboolean *use_secondary);
 
 qboolean IsValidToFireAtTheMoment(bot_t &pBot, const bot_weapon_select_t &select);
-qboolean BotWeaponCanAttack(bot_t &pBot, const qboolean GoodWeaponsOnly);
-qboolean BotGetGoodWeaponCount(bot_t &pBot, const int stop_count);
+qboolean BotWeaponCanAttack(bot_t &pBot, qboolean GoodWeaponsOnly);
+qboolean BotGetGoodWeaponCount(bot_t &pBot, int stop_count);
 #endif // BOT_WEAPONS_H
 

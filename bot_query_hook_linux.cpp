@@ -14,9 +14,9 @@
 #include <pthread.h>
 
 #include <memory.h>
-#include <string.h>
+#include <cstring>
 #include <errno.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "bot_query_hook.h"
 

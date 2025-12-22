@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>
@@ -21,9 +21,9 @@
 
 // types of damage to ignore...
 #define IGNORE_DAMAGE (DMG_CRUSH | DMG_BURN | DMG_FREEZE | DMG_FALL | \
-                       DMG_SHOCK | DMG_DROWN | DMG_NERVEGAS | DMG_RADIATION | \
-                       DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN | \
-                       DMG_SLOWFREEZE | 0xFF000000)
+					   DMG_SHOCK | DMG_DROWN | DMG_NERVEGAS | DMG_RADIATION | \
+					   DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN | \
+					   DMG_SLOWFREEZE | 0xFF000000)
 
 extern bot_t bots[32];
 extern int num_logos;
@@ -44,52 +44,52 @@ void BotClient_Valve_WeaponList(void *p, int bot_index)
 
    if (state == 0)
    {
-      state++;
-      safe_strcopy(bot_weapon.szClassname, sizeof(bot_weapon.szClassname), (char *)p);
+	  state++;
+	  safe_strcopy(bot_weapon.szClassname, sizeof(bot_weapon.szClassname), static_cast<char*>(p));
    }
    else if (state == 1)
    {
-      state++;
-      bot_weapon.iAmmo1 = *(int *)p;  // ammo index 1
+	  state++;
+	  bot_weapon.iAmmo1 = *static_cast<int*>(p);  // ammo index 1
    }
    else if (state == 2)
    {
-      state++;
-      bot_weapon.iAmmo1Max = *(int *)p;  // max ammo1
+	  state++;
+	  bot_weapon.iAmmo1Max = *static_cast<int*>(p);  // max ammo1
    }
    else if (state == 3)
    {
-      state++;
-      bot_weapon.iAmmo2 = *(int *)p;  // ammo index 2
+	  state++;
+	  bot_weapon.iAmmo2 = *static_cast<int*>(p);  // ammo index 2
    }
    else if (state == 4)
    {
-      state++;
-      bot_weapon.iAmmo2Max = *(int *)p;  // max ammo2
+	  state++;
+	  bot_weapon.iAmmo2Max = *static_cast<int*>(p);  // max ammo2
    }
    else if (state == 5)
    {
-      state++;
-      bot_weapon.iSlot = *(int *)p;  // slot for this weapon
+	  state++;
+	  bot_weapon.iSlot = *static_cast<int*>(p);  // slot for this weapon
    }
    else if (state == 6)
    {
-      state++;
-      bot_weapon.iPosition = *(int *)p;  // position in slot
+	  state++;
+	  bot_weapon.iPosition = *static_cast<int*>(p);  // position in slot
    }
    else if (state == 7)
    {
-      state++;
-      bot_weapon.iId = *(int *)p;  // weapon ID
+	  state++;
+	  bot_weapon.iId = *static_cast<int*>(p);  // weapon ID
    }
    else if (state == 8)
    {
-      state = 0;
+	  state = 0;
 
-      bot_weapon.iFlags = *(int *)p;  // flags for weapon (WTF???)
+	  bot_weapon.iFlags = *static_cast<int*>(p);  // flags for weapon (WTF???)
 
-      // store away this weapon with it's ammo information...
-      weapon_defs[bot_weapon.iId] = bot_weapon;
+	  // store away this weapon with it's ammo information...
+	  weapon_defs[bot_weapon.iId] = bot_weapon;
    }
 }
 
@@ -101,55 +101,54 @@ void BotClient_Valve_CurrentWeapon(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int iState;
    static int iId;
-   static int iClip;
 
    if (state == 0)
    {
-      state++;
-      iState = *(int *)p;  // state of the current weapon
+	  state++;
+	  iState = *static_cast<int*>(p);  // state of the current weapon
    }
    else if (state == 1)
    {
-      state++;
-      iId = *(int *)p;  // weapon ID of current weapon
+	  state++;
+	  iId = *static_cast<int*>(p);  // weapon ID of current weapon
    }
    else if (state == 2)
    {
-      state = 0;
+	   static int iClip;
+	   state = 0;
 
-      iClip = *(int *)p;  // ammo currently in the clip for this weapon
+	  iClip = *static_cast<int*>(p);  // ammo currently in the clip for this weapon
 
-      if (iId <= 31)
-      {
-         if (iState == 1)
-         {
-            bot_weapon_select_t *pSelect = NULL;
-            int found = 0;
-            
-            bots[bot_index].current_weapon.iId = iId;
-            bots[bot_index].current_weapon.iClip = iClip;
+	  if (iId <= 31)
+	  {
+		 if (iState == 1)
+		 {
+			int found = 0;
+			
+			bots[bot_index].current_weapon.iId = iId;
+			bots[bot_index].current_weapon.iClip = iClip;
 
-            // update the ammo counts for this weapon...
-            bots[bot_index].current_weapon.iAmmo1 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo1];
-            bots[bot_index].current_weapon.iAmmo2 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo2];
+			// update the ammo counts for this weapon...
+			bots[bot_index].current_weapon.iAmmo1 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo1];
+			bots[bot_index].current_weapon.iAmmo2 = bots[bot_index].m_rgAmmo[weapon_defs[iId].iAmmo2];
 
-            pSelect = &weapon_select[0];
-            
-            for(int i = 0; pSelect && pSelect[i].iId; i++) 
-            {
-               if(iId == pSelect[i].iId) 
-               	{
-                  bots[bot_index].current_opt_distance = pSelect[i].opt_distance;
-                  bots[bot_index].current_weapon_index = i;
-                  found = 1;
-               	  break;
-               }
-            }
-            
-            if(!found)
-               bots[bot_index].current_opt_distance = 99999.0;
-         }
-      }
+			const bot_weapon_select_t* pSelect = &weapon_select[0];
+			
+			for(int i = 0; pSelect && pSelect[i].iId; i++) 
+			{
+			   if(iId == pSelect[i].iId) 
+				{
+				  bots[bot_index].current_opt_distance = pSelect[i].opt_distance;
+				  bots[bot_index].current_weapon_index = i;
+				  found = 1;
+				  break;
+			   }
+			}
+			
+			if(!found)
+			   bots[bot_index].current_opt_distance = 99999.0f;
+		 }
+	  }
    }
 }
 
@@ -164,27 +163,27 @@ void PlayerClient_Valve_CurrentWeapon(void *p, int player_index)
 
    if (state == 0)
    {
-      state++;
-      iState = *(int *)p;  // state of the current weapon
+	  state++;
+	  iState = *static_cast<int*>(p);  // state of the current weapon
    }
    else if (state == 1)
    {
-      state++;
-      iId = *(int *)p;  // weapon ID of current weapon
+	  state++;
+	  iId = *static_cast<int*>(p);  // weapon ID of current weapon
    }
    else if (state == 2)
    {
-      state = 0;
+	  state = 0;
 
-      //iClip = *(int *)p;  // ammo currently in the clip for this weapon
+	  //iClip = *(int *)p;  // ammo currently in the clip for this weapon
 
-      if (iId <= 31)
-      {
-         if (iState == 1)
-         {
-            players[player_index].current_weapon_id = iId;
-         }
-      }
+	  if (iId <= 31)
+	  {
+		 if (iState == 1)
+		 {
+			players[player_index].current_weapon_id = iId;
+		 }
+	  }
    }
 }
 */
@@ -195,29 +194,28 @@ void BotClient_Valve_AmmoX(void *p, int bot_index)
 {
    static int state = 0;   // current state machine state
    static int index;
-   static int ammount;
-   int ammo_index;
 
    if (state == 0)
    {
-      state++;
-      index = *(int *)p;  // ammo index (for type of ammo)
+	  state++;
+	  index = *static_cast<int*>(p);  // ammo index (for type of ammo)
    }
    else if (state == 1)
    {
-      state = 0;
+	   static int amount;
+	   state = 0;
 
-      ammount = *(int *)p;  // the ammount of ammo currently available
+	  amount = *static_cast<int*>(p);  // the ammount of ammo currently available
 
-      bots[bot_index].m_rgAmmo[index] = ammount;  // store it away
+	  bots[bot_index].m_rgAmmo[index] = amount;  // store it away
 
-      ammo_index = bots[bot_index].current_weapon.iId;
+	  const int ammo_index = bots[bot_index].current_weapon.iId;
 
-      // update the ammo counts for this weapon...
-      bots[bot_index].current_weapon.iAmmo1 =
-         bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo1];
-      bots[bot_index].current_weapon.iAmmo2 =
-         bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo2];
+	  // update the ammo counts for this weapon...
+	  bots[bot_index].current_weapon.iAmmo1 =
+		 bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo1];
+	  bots[bot_index].current_weapon.iAmmo2 =
+		 bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo2];
    }
 }
 
@@ -230,29 +228,28 @@ void BotClient_Valve_AmmoPickup(void *p, int bot_index)
 {
    static int state = 0;   // current state machine state
    static int index;
-   static int ammount;
-   int ammo_index;
 
    if (state == 0)
    {
-      state++;
-      index = *(int *)p;
+	  state++;
+	  index = *static_cast<int*>(p);
    }
    else if (state == 1)
    {
-      state = 0;
+	   static int amount;
+	   state = 0;
 
-      ammount = *(int *)p;
+	  amount = *static_cast<int*>(p);
 
-      bots[bot_index].m_rgAmmo[index] = ammount;
+	  bots[bot_index].m_rgAmmo[index] = amount;
 
-      ammo_index = bots[bot_index].current_weapon.iId;
+	  const int ammo_index = bots[bot_index].current_weapon.iId;
 
-      // update the ammo counts for this weapon...
-      bots[bot_index].current_weapon.iAmmo1 =
-         bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo1];
-      bots[bot_index].current_weapon.iAmmo2 =
-         bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo2];
+	  // update the ammo counts for this weapon...
+	  bots[bot_index].current_weapon.iAmmo1 =
+		 bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo1];
+	  bots[bot_index].current_weapon.iAmmo2 =
+		 bots[bot_index].m_rgAmmo[weapon_defs[ammo_index].iAmmo2];
    }
 }
 
@@ -269,13 +266,13 @@ void BotClient_Valve_ItemPickup(void *p, int bot_index)
 {
    char itemname[64];
    
-   safe_strcopy(itemname, sizeof(itemname), (char *)p);
+   safe_strcopy(itemname, sizeof(itemname), static_cast<char*>(p));
 
    if (strcmp(itemname, "item_longjump") == 0)
    {
-      bots[bot_index].b_longjump = TRUE;
-      bots[bot_index].f_combat_longjump = gpGlobals->time + 0.2;
-      bots[bot_index].b_combat_longjump = FALSE;
+	  bots[bot_index].b_longjump = TRUE;
+	  bots[bot_index].f_combat_longjump = gpGlobals->time + 0.2f;
+	  bots[bot_index].b_combat_longjump = FALSE;
    }
 }
 
@@ -303,60 +300,60 @@ void BotClient_Valve_Damage(void *p, int bot_index)
 
    if (state == 0)
    {
-      state++;
-      damage_armor = *(int *)p;
+	  state++;
+	  damage_armor = *static_cast<int*>(p);
    }
    else if (state == 1)
    {
-      state++;
-      damage_taken = *(int *)p;
+	  state++;
+	  damage_taken = *static_cast<int*>(p);
    }
    else if (state == 2)
    {
-      state++;
-      damage_bits = *(int *)p;
+	  state++;
+	  damage_bits = *static_cast<int*>(p);
    }
    else if (state == 3)
    {
-      state++;
-      damage_origin.x = *(float *)p;
+	  state++;
+	  damage_origin.x = *static_cast<float*>(p);
    }
    else if (state == 4)
    {
-      state++;
-      damage_origin.y = *(float *)p;
+	  state++;
+	  damage_origin.y = *static_cast<float*>(p);
    }
    else if (state == 5)
    {
-      state = 0;
+	  state = 0;
 
-      damage_origin.z = *(float *)p;
+	  damage_origin.z = *static_cast<float*>(p);
 
-      if ((damage_armor > 0) || (damage_taken > 0))
-      {
-         // ignore certain types of damage...
-         if (damage_bits & IGNORE_DAMAGE)
-            return;
+	  if ((damage_armor > 0) || (damage_taken > 0))
+	  {
+		 // ignore certain types of damage...
+		 if (damage_bits & IGNORE_DAMAGE)
+			return;
 
-         bots[bot_index].f_last_time_attacked = gpGlobals->time;
+		 bots[bot_index].f_last_time_attacked = gpGlobals->time;
 
-         // if the bot doesn't have an enemy and someone is shooting at it then
-         // turn in the attacker's direction...
-         if (bots[bot_index].pBotEnemy == NULL || !FPredictedVisible(bots[bot_index]))
-         {
-            // face the attacker...
-            Vector v_enemy = damage_origin - bots[bot_index].pEdict->v.origin;
-            Vector bot_angles = UTIL_VecToAngles( v_enemy );
+		 // if the bot doesn't have an enemy and someone is shooting at it then
+		 // turn in the attacker's direction...
+		 if (bots[bot_index].pBotEnemy == nullptr || !FPredictedVisible(bots[bot_index]))
+		 {
+			// face the attacker...
+			const Vector v_enemy = damage_origin - bots[bot_index].pEdict->v.origin;
+			const Vector bot_angles = UTIL_VecToAngles( v_enemy );
 
-            bots[bot_index].pEdict->v.ideal_yaw = bot_angles.y;
+			bots[bot_index].pEdict->v.ideal_yaw = bot_angles.y;
 
-            BotFixIdealYaw(bots[bot_index].pEdict);
-         
-            // stop using health or HEV stations...
-            bots[bot_index].b_use_health_station = FALSE;
-            bots[bot_index].b_use_HEV_station = FALSE;
-         }
-      }
+			BotFixIdealYaw(bots[bot_index].pEdict);
+		 
+			// stop using health or HEV stations...
+			bots[bot_index].b_use_health_station = FALSE;
+			bots[bot_index].b_use_HEV_station = FALSE;
+		 }
+	  }
    }
 }
 
@@ -367,66 +364,66 @@ void BotClient_Valve_DeathMsg(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int killer_index;
    static int victim_index;
-   static edict_t *killer_edict;
-   static edict_t *victim_edict;
-   static int index;
 
    if (state == 0)
    {
-      state++;
-      killer_index = *(int *)p;  // ENTINDEX() of killer
+	  state++;
+	  killer_index = *static_cast<int*>(p);  // ENTINDEX() of killer
    }
    else if (state == 1)
    {
-      state++;
-      victim_index = *(int *)p;  // ENTINDEX() of victim
+	  state++;
+	  victim_index = *static_cast<int*>(p);  // ENTINDEX() of victim
    }
    else if (state == 2)
    {
-      state = 0;
+	   static int index;
+	   static edict_t *victim_edict;
+	   static edict_t *killer_edict;
+	   state = 0;
 
-      killer_edict = INDEXENT(killer_index);
-      victim_edict = INDEXENT(victim_index);
+	  killer_edict = INDEXENT(killer_index);
+	  victim_edict = INDEXENT(victim_index);
 
-      // get the bot index of the killer...
-      index = UTIL_GetBotIndex(killer_edict);
+	  // get the bot index of the killer...
+	  index = UTIL_GetBotIndex(killer_edict);
 
-      // is this message about a bot killing someone?
-      if (index != -1)
-      {
-         if (killer_index != victim_index)  // didn't kill self...
-         {
-            if ((RANDOM_LONG2(1, 100) <= bots[index].logo_percent) && (num_logos))
-            {
-               bots[index].b_spray_logo = TRUE;  // this bot should spray logo now
-               bots[index].f_spray_logo_time = gpGlobals->time;
-            }
+	  // is this message about a bot killing someone?
+	  if (index != -1)
+	  {
+		 if (killer_index != victim_index)  // didn't kill self...
+		 {
+			if ((RANDOM_LONG2(1, 100) <= bots[index].logo_percent) && (num_logos))
+			{
+			   bots[index].b_spray_logo = TRUE;  // this bot should spray logo now
+			   bots[index].f_spray_logo_time = gpGlobals->time;
+			}
 
-            if (victim_edict != NULL)
-            {
-               BotChatTaunt(bots[index], victim_edict);
-            }
-         }
+			if (victim_edict != nullptr)
+			{
+			   BotChatTaunt(bots[index], victim_edict);
+			}
+		 }
 
-      }
+	  }
 
-      // get the bot index of the victim...
-      index = UTIL_GetBotIndex(victim_edict);
+	  // get the bot index of the victim...
+	  index = UTIL_GetBotIndex(victim_edict);
 
-      // is this message about a bot being killed?
-      if (index != -1)
-      {
-         if ((killer_index == 0) || (killer_index == victim_index))
-         {
-            // bot killed by world (worldspawn) or bot killed self...
-            bots[index].killer_edict = NULL;
-         }
-         else
-         {
-            // store edict of player that killed this bot...
-            bots[index].killer_edict = INDEXENT(killer_index);
-         }
-      }
+	  // is this message about a bot being killed?
+	  if (index != -1)
+	  {
+		 if ((killer_index == 0) || (killer_index == victim_index))
+		 {
+			// bot killed by world (worldspawn) or bot killed self...
+			bots[index].killer_edict = nullptr;
+		 }
+		 else
+		 {
+			// store edict of player that killed this bot...
+			bots[index].killer_edict = INDEXENT(killer_index);
+		 }
+	  }
    }
 }
 
@@ -436,34 +433,32 @@ void BotClient_Valve_ScreenFade(void *p, int bot_index)
    static int state = 0;   // current state machine state
    static int duration;
    static int hold_time;
-   //static int fade_flags;
-   int length;
 
    if (state == 0)
    {
-      state++;
-      duration = *(int *)p;
+	  state++;
+	  duration = *static_cast<int*>(p);
    }
    else if (state == 1)
    {
-      state++;
-      hold_time = *(int *)p;
+	  state++;
+	  hold_time = *static_cast<int*>(p);
    }
    else if (state == 2)
    {
-      state++;
-      //fade_flags = *(int *)p;
+	  state++;
+	  //fade_flags = *(int *)p;
    }
    else if (state == 6)
    {
-      state = 0;
+	  state = 0;
 
-      length = (duration + hold_time) / 4096;
-      bots[bot_index].blinded_time = gpGlobals->time + length - 2.0;
+	  const int length = (duration + hold_time) / 4096;
+	  bots[bot_index].blinded_time = gpGlobals->time + static_cast<int>(length) - 2.0f;
    }
    else
    {
-      state++;
+	  state++;
    }
 }
 

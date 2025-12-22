@@ -5,11 +5,11 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <malloc.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <memory.h>
 
 #include <extdll.h>
@@ -43,7 +43,7 @@ static bool msg_get_string(const unsigned char * &msg, size_t &len, char * name,
 }
 
 // find bot connection times and replace
-ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
 /*
 (int32) Header
@@ -59,24 +59,21 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 (int32) Player Score
 (float32) Player Time
 */
-	unsigned char * newmsg = (unsigned char *)alloca(length);
+	unsigned char * newmsg = static_cast<unsigned char*>(alloca(length));
 	memcpy(newmsg, message, length);
 	
 	size_t len = length - 5;
-	const unsigned char * msg = (const unsigned char*)message + 5;
-	
-	int i, pcount;
-	size_t offset;
-	char pname[64];
-	
-	//get player count
-	pcount = *msg++;
+	const unsigned char * msg = static_cast<const unsigned char*>(message) + 5;
+
+//get player count
+const int pcount = *msg++;
 	if(--len == 0)
 		return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len));
 	
 	//parse player slots
-	for(i = 0; i < pcount; i++) 
-	{		
+	for(int i = 0; i < pcount; i++) 
+	{
+		char pname[64];
 		// skip player number
 		msg++;
 		if(--len == 0)
@@ -96,11 +93,11 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 		
 		// check that there is enough bytes left
 		if(len < 4) 
-			return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len)); 
+			return(call_original_sendto(socket, newmsg, length, flags, dest_addr, dest_len));
+
+		const size_t offset = reinterpret_cast<size_t>(msg) - reinterpret_cast<size_t>(message);
 		
-		offset = (size_t)msg - (size_t)message;
-		
-		BotReplaceConnectionTime(pname, (float*)&newmsg[offset]);
+		BotReplaceConnectionTime(pname, reinterpret_cast<float*>(&newmsg[offset]));
 		
 		msg+=4;
 		len-=4;
@@ -113,7 +110,7 @@ ssize_t PASCAL handle_player_reply(int socket, const void *message, size_t lengt
 }
 
 // find number of bots and replace with zero
-ssize_t PASCAL handle_goldsrc_server_info_reply(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+ssize_t PASCAL handle_goldsrc_server_info_reply(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
 /*
 Header 		byte 	Always equal to 'm' (0x6D.)
@@ -126,18 +123,18 @@ Players 	byte 	Number of players on the server.
 Max. Players 	byte 	Maximum number of players the server reports it can hold.
 Protocol 	byte 	Protocol version used by the server.
 Server type 	byte 	Indicates the type of server:
-    'D' for dedicated server
-    'L' for non-dedicated server
-    'P' for a HLTV server
+	'D' for dedicated server
+	'L' for non-dedicated server
+	'P' for a HLTV server
 Environment 	byte 	Indicates the operating system of the server:
-    'L' for Linux
-    'W' for Windows
+	'L' for Linux
+	'W' for Windows
 Visibility 	byte 	Indicates whether the server requires a password:
-    0 for public
-    1 for private
+	0 for public
+	1 for private
 Mod 		byte 	Indicates whether the game is a mod:
-    0 for Half-Life
-    1 for Half-Life mod
+	0 for Half-Life
+	1 for Half-Life mod
 	These fields are only present in the response if "Mod" is 1:
 	Data 		Type 	Comment
 	Link	 	string 	URL to mod website.
@@ -152,19 +149,19 @@ Mod 		byte 	Indicates whether the game is a mod:
 		0 if it uses the Half-Life DLL
 		1 if it uses its own DLL
 VAC 		byte 	Specifies whether the server uses VAC:
-    0 for unsecured
-    1 for secured
+	0 for unsecured
+	1 for secured
 Bots	 	byte 	Number of bots on the server. 
  */
-	unsigned char * newmsg = (unsigned char *)alloca(length);
+	unsigned char * newmsg = static_cast<unsigned char*>(alloca(length));
 	memcpy(newmsg, message, length);
 
 	ssize_t len = length - 5;
-	unsigned char * msg = (unsigned char*)newmsg + 5;
+	unsigned char * msg = newmsg + 5;
 
 	bool is_mod;
 
-	// skip IP address and port
+// skip IP address and port
 	while (len > 0) {
 		if (*msg == 0) {
 			msg++;
@@ -264,7 +261,7 @@ Bots	 	byte 	Number of bots on the server.
 		goto out;
 
 	// environment, linux or windows
-	if (*msg != 'W' && *msg != 'W' && *msg != 'L' && *msg != 'l')
+	if (*msg != 'W' && *msg != 'L' && *msg != 'l')
 		goto out;
 	msg++;
 	len--;
@@ -369,7 +366,7 @@ out:
 }
 
 // find number of bots and replace with zero
-ssize_t PASCAL handle_source_server_info_reply(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+ssize_t PASCAL handle_source_server_info_reply(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
 /*
 Header 		byte 	Always equal to 'I' (0x49.)
@@ -384,32 +381,32 @@ Max. Players 	byte 	Maximum number of players the server reports it can hold.
 Bots 		byte 	Number of bots on the server.
 Server type 	byte 	Indicates the type of server:
 
-    'D' for a dedicated server
-    'L' for a non-dedicated server
-    'P' for a SourceTV server
+	'D' for a dedicated server
+	'L' for a non-dedicated server
+	'P' for a SourceTV server
 
 Environment 	byte 	Indicates the operating system of the server:
 
-    'L' for Linux
-    'W' for Windows
+	'L' for Linux
+	'W' for Windows
 
 Visibility 	byte 	Indicates whether the server requires a password:
 
-    0 for public
-    1 for private
+	0 for public
+	1 for private
 
 VAC 		byte 	Specifies whether the server uses VAC:
 
-    0 for unsecured
-    1 for secured
+	0 for unsecured
+	1 for secured
 
 ....Continues....
  */
-	unsigned char * newmsg = (unsigned char *)alloca(length);
+	unsigned char * newmsg = static_cast<unsigned char*>(alloca(length));
 	memcpy(newmsg, message, length);
 
 	ssize_t len = length - 5;
-	unsigned char * msg = (unsigned char*)newmsg + 5;
+	unsigned char * msg = newmsg + 5;
 
 	// protocol
 	msg++;
@@ -504,9 +501,9 @@ out:
 }
 
 //
-ssize_t PASCAL sendto_hook(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+ssize_t PASCAL sendto_hook(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
-	const unsigned char * orig_buf = (unsigned char*)message;
+	const unsigned char* orig_buf = static_cast<const unsigned char*>(message);
 
 	if (!gpGlobals)
 		goto out;

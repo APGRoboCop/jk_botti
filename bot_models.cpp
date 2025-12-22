@@ -5,7 +5,7 @@
 //
 
 #ifndef _WIN32
-#include <string.h>
+#include <cstring>
 #endif
 
 #include <extdll.h>
@@ -58,52 +58,52 @@ static HANDLE FindDirectory(HANDLE hFile, char *dirname, int sizeof_dirname, cha
 {
    WIN32_FIND_DATA pFindFileData;
 
-   if (hFile == NULL)
+   if (hFile == nullptr)
    {
-      hFile = FindFirstFile(dirspec, &pFindFileData);
+	  hFile = FindFirstFile(dirspec, &pFindFileData);
 
-      if (hFile == INVALID_HANDLE_VALUE)
-      {
-         hFile = NULL;
+	  if (hFile == INVALID_HANDLE_VALUE)
+	  {
+		 hFile = nullptr;
 	 return hFile; // bugfix
-      }
+	  }
 
-      while (pFindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
-      {
-         if (FindNextFile(hFile, &pFindFileData) == 0)
-         {
-            FindClose(hFile);
-            hFile = NULL;
-            return hFile;
-         }
-      }
+	  while (pFindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
+	  {
+		 if (FindNextFile(hFile, &pFindFileData) == 0)
+		 {
+			FindClose(hFile);
+			hFile = nullptr;
+			return hFile;
+		 }
+	  }
 
-      safe_strcopy(dirname, sizeof_dirname, pFindFileData.cFileName);
+	  safe_strcopy(dirname, sizeof_dirname, pFindFileData.cFileName);
 
-      return hFile;
+	  return hFile;
    }
    else
    {
-      if (FindNextFile(hFile, &pFindFileData) == 0)
-      {
-         FindClose(hFile);
-         hFile = NULL;
-         return hFile;
-      }
+	  if (FindNextFile(hFile, &pFindFileData) == 0)
+	  {
+		 FindClose(hFile);
+		 hFile = nullptr;
+		 return hFile;
+	  }
 
-      while (pFindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
-      {
-         if (FindNextFile(hFile, &pFindFileData) == 0)
-         {
-            FindClose(hFile);
-            hFile = NULL;
-            return hFile;
-         }
-      }
+	  while (pFindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY)
+	  {
+		 if (FindNextFile(hFile, &pFindFileData) == 0)
+		 {
+			FindClose(hFile);
+			hFile = nullptr;
+			return hFile;
+		 }
+	  }
 
-      safe_strcopy(dirname, sizeof_dirname, pFindFileData.cFileName);
+	  safe_strcopy(dirname, sizeof_dirname, pFindFileData.cFileName);
 
-      return hFile;
+	  return hFile;
    }
 }
 
@@ -118,22 +118,22 @@ static DIR *FindDirectory(DIR *directory, char *dirname, int sizeof_dirname, cha
 
    if (directory == NULL)
    {
-      if ((directory = opendir(dirspec)) == NULL)
-         return NULL;
+	  if ((directory = opendir(dirspec)) == NULL)
+		 return NULL;
    }
 
    while ((dirent = readdir(directory)) != NULL)
    {
-      safevoid_snprintf(pathname, sizeof(pathname), "%s/%s", dirspec, dirent->d_name);
+	  safevoid_snprintf(pathname, sizeof(pathname), "%s/%s", dirspec, dirent->d_name);
 
-      if (stat(pathname, &stat_str) == 0)
-      {
-         if (stat_str.st_mode & S_IFDIR)
-         {
-            safe_strcopy(dirname, sizeof_dirname, dirent->d_name);
-            return directory;
-         }
-      }
+	  if (stat(pathname, &stat_str) == 0)
+	  {
+		 if (stat_str.st_mode & S_IFDIR)
+		 {
+			safe_strcopy(dirname, sizeof_dirname, dirent->d_name);
+			return directory;
+		 }
+	  }
    }
    
    /* at end of directory? */
@@ -144,32 +144,31 @@ static DIR *FindDirectory(DIR *directory, char *dirname, int sizeof_dirname, cha
 
 
 //
-void LoadBotModels(void)
+void LoadBotModels()
 {
    char game_dir[256];
    char path[MAX_PATH];
    char search_path[MAX_PATH];
    char dirname[MAX_PATH];
-   char filename[MAX_PATH];
    int index;
    struct stat stat_str;
 #ifndef __linux__
-   HANDLE directory = NULL;
+   HANDLE directory = nullptr;
 #else
    DIR *directory = NULL;
 #endif
 
    for (index=0; index < MAX_SKINS; index++)
-      bot_skins[index].skin_used = FALSE;
+	  bot_skins[index].skin_used = FALSE;
 
    number_skins = VALVE_MAX_SKINS;
    if(submod_id == SUBMOD_OP4)
-      number_skins += GEARBOX_MAX_SKINS;
+	  number_skins += GEARBOX_MAX_SKINS;
 
    for (index=0; index < number_skins; index++)
    {
-      safe_strcopy(bot_skins[index].model_name, sizeof(bot_skins[index].model_name), default_bot_models[index]);
-      safe_strcopy(bot_skins[index].bot_name, sizeof(bot_skins[index].bot_name), default_bot_names[index]);
+	  safe_strcopy(bot_skins[index].model_name, sizeof(bot_skins[index].model_name), default_bot_models[index]);
+	  safe_strcopy(bot_skins[index].bot_name, sizeof(bot_skins[index].bot_name), default_bot_names[index]);
    }
 
    // find the directory name of the currently running MOD...
@@ -179,8 +178,8 @@ void LoadBotModels(void)
 
    if (stat(path, &stat_str) != 0)
    {
-      // use the valve/models/player directory if no MOD models/player
-      strcpy(path, "valve/models/player");
+	  // use the valve/models/player directory if no MOD models/player
+	  strcpy(path, "valve/models/player");
    }
 
 #ifndef __linux__
@@ -189,40 +188,41 @@ void LoadBotModels(void)
    strcpy(search_path, path);
 #endif
 
-   while ((directory = FindDirectory(directory, dirname, sizeof(dirname), search_path)) != NULL)
+   while ((directory = FindDirectory(directory, dirname, sizeof(dirname), search_path)) != nullptr)
    {
-      if ((strcmp(dirname, ".") == 0) || (strcmp(dirname, "..") == 0))
-         continue;
+	   char filename[MAX_PATH];
+	   if ((strcmp(dirname, ".") == 0) || (strcmp(dirname, "..") == 0))
+		 continue;
 
-      safevoid_snprintf(filename, sizeof(filename), "%s/%s/%s.mdl", path, dirname, dirname);
+	  safevoid_snprintf(filename, sizeof(filename), "%s/%s/%s.mdl", path, dirname, dirname);
 
-      if (stat(filename, &stat_str) == 0)
-      {
-         // add this model to the array of models...
-         for (index=0; dirname[index]; index++)
-            dirname[index] = tolower(dirname[index]);
+	  if (stat(filename, &stat_str) == 0)
+	  {
+		 // add this model to the array of models...
+		 for (index=0; dirname[index]; index++)
+			dirname[index] = tolower(dirname[index]);
 
-         // check for duplicate...
-         for (index=0; index < number_skins; index++)
-         {
-            if (strcmp(dirname, bot_skins[index].model_name) == 0)
-               break;
-         }
+		 // check for duplicate...
+		 for (index=0; index < number_skins; index++)
+		 {
+			if (strcmp(dirname, bot_skins[index].model_name) == 0)
+			   break;
+		 }
 
-         if (index == number_skins)
-         {
-            // add this model to the bot_skins array...
-            safe_strcopy(bot_skins[number_skins].model_name, sizeof(bot_skins[number_skins].model_name), dirname);
+		 if (index == number_skins)
+		 {
+			// add this model to the bot_skins array...
+			safe_strcopy(bot_skins[number_skins].model_name, sizeof(bot_skins[number_skins].model_name), dirname);
 
-            dirname[0] = toupper(dirname[0]);
-            safe_strcopy(bot_skins[number_skins].bot_name, sizeof(bot_skins[number_skins].bot_name), dirname);
+			dirname[0] = toupper(dirname[0]);
+			safe_strcopy(bot_skins[number_skins].bot_name, sizeof(bot_skins[number_skins].bot_name), dirname);
 
-            number_skins++;
-         }
-      }
+			number_skins++;
+		 }
+	  }
 
-      if (number_skins == MAX_SKINS)
-         break;  // break out if max models reached
+	  if (number_skins == MAX_SKINS)
+		 break;  // break out if max models reached
    }
 }
 

@@ -6,11 +6,11 @@
 
 #ifdef _WIN32
 
-#include <string.h>
+#include <cstring>
 
 #include <memory.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 
 #include <winsock2.h>
 #include <windows.h>
@@ -36,7 +36,7 @@
 //opcode + sizeof pointer
 #define BYTES_SIZE (JMP_SIZE + PTR_SIZE)
 
-typedef ssize_t (PASCAL * sendto_func)(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len);
+typedef ssize_t (PASCAL * sendto_func)(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len);
 
 static bool is_sendto_hook_setup = false;
 
@@ -53,45 +53,44 @@ static unsigned char sendto_old_bytes[BYTES_SIZE];
 static CRITICAL_SECTION mutex_replacement_sendto;
 
 //restores old sendto
-inline void restore_original_sendto(void)
+inline void restore_original_sendto()
 {
 	//Copy old sendto bytes back
-	memcpy((void*)sendto_original, sendto_old_bytes, BYTES_SIZE);
+	memcpy(const_cast<void*>(sendto_original), sendto_old_bytes, BYTES_SIZE);
 }
 
 //resets new sendto
-inline void reset_sendto_hook(void)
+inline void reset_sendto_hook()
 {
 	//Copy new sendto bytes back
-	memcpy((void*)sendto_original, sendto_new_bytes, BYTES_SIZE);
+	memcpy(const_cast<void*>(sendto_original), sendto_new_bytes, BYTES_SIZE);
 }
 
 // Replacement sendto function
-static ssize_t PASCAL __replacement_sendto(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+static ssize_t PASCAL __replacement_sendto(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
 	return sendto_hook(socket, message, length, flags, dest_addr, dest_len);
 }
 
 //
-ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t length, int flags, const struct sockaddr *dest_addr, socklen_t dest_len)
+ssize_t PASCAL call_original_sendto(int socket, const void *message, size_t length, int flags, const sockaddr *dest_addr, socklen_t dest_len)
 {
 	WSABUF iov = {0,};
 	iov.buf = (char*)message;
 	iov.len = length;
 	DWORD num_sent = 0;
-	int err;
 
-	err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, NULL, NULL);
+	const int err = WSASendTo(socket, &iov, 1, &num_sent, flags, dest_addr, dest_len, nullptr, nullptr);
 	if (err == SOCKET_ERROR) {
 		errno = WSAGetLastError();
 		return -1;
 	}
 
-	return (size_t)num_sent;
+	return num_sent;
 }
 
 //
-bool hook_sendto_function(void)
+bool hook_sendto_function()
 {
 	DWORD tmp = 0;
 	
@@ -102,16 +101,16 @@ bool hook_sendto_function(void)
 	
 	is_sendto_hook_setup = false;
 	
-	sendto_original = (sendto_func)GetProcAddress(GetModuleHandle("wsock32.dll"), "sendto");
+	sendto_original = sendto_func(GetProcAddress(GetModuleHandle("wsock32.dll"), "sendto"));
 	
 	//Backup old bytes of "sendto" function
-	memcpy(sendto_old_bytes, (void*)sendto_original, BYTES_SIZE);
+	memcpy(sendto_old_bytes, const_cast<void*>(sendto_original), BYTES_SIZE);
 	
 	//Construct new bytes: "jmp offset[replacement_sendto] @ sendto_original"
-	construct_jmp_instruction((void*)&sendto_new_bytes[0], (void*)sendto_original, (void*)&__replacement_sendto);
-	
+	construct_jmp_instruction((void*)&sendto_new_bytes[0], const_cast<void*>(sendto_original), const_cast<void*>(&__replacement_sendto))
+
 	//Remove readonly restriction
-	if(!VirtualProtect((void*)sendto_original, BYTES_SIZE, PAGE_READWRITE, &tmp))
+	if(!VirtualProtect(const_cast<void*>(sendto_original), BYTES_SIZE, PAGE_READWRITE, &tmp))
 	{
 		UTIL_ConsolePrintf("Couldn't initialize sendto hook, VirtualProtect failed: %i.  Exiting...\n", GetLastError());
 		return(false);
@@ -127,7 +126,7 @@ bool hook_sendto_function(void)
 }
 
 //
-bool unhook_sendto_function(void)
+bool unhook_sendto_function()
 {
 	if(!is_sendto_hook_setup)
 		return(true);
