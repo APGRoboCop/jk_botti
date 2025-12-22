@@ -13,8 +13,8 @@ ifeq ($(OSTYPE),win32)
 	DLLEND = .dll
 	ZLIB_OSFLAGS =
 else
-	CPP = clang++ -m32
-	CC = clang -m32
+	CPP = g++ -m32
+	CC = gcc -m32
 	AR = ar rc
 	RANLIB = ranlib
 	ARCHFLAG = -fPIC
