@@ -56,14 +56,14 @@ static CRITICAL_SECTION mutex_replacement_sendto;
 inline void restore_original_sendto()
 {
 	//Copy old sendto bytes back
-	memcpy(const_cast<void*>(sendto_original), sendto_old_bytes, BYTES_SIZE);
+	memcpy((void*)(sendto_original), sendto_old_bytes, BYTES_SIZE);
 }
 
 //resets new sendto
 inline void reset_sendto_hook()
 {
 	//Copy new sendto bytes back
-	memcpy(const_cast<void*>(sendto_original), sendto_new_bytes, BYTES_SIZE);
+	memcpy((void*)(sendto_original), sendto_new_bytes, BYTES_SIZE);
 }
 
 // Replacement sendto function
@@ -104,13 +104,13 @@ bool hook_sendto_function()
 	sendto_original = sendto_func(GetProcAddress(GetModuleHandle("wsock32.dll"), "sendto"));
 	
 	//Backup old bytes of "sendto" function
-	memcpy(sendto_old_bytes, const_cast<void*>(sendto_original), BYTES_SIZE);
+	memcpy(sendto_old_bytes, (void*)(sendto_original), BYTES_SIZE);
 	
 	//Construct new bytes: "jmp offset[replacement_sendto] @ sendto_original"
-	construct_jmp_instruction((void*)&sendto_new_bytes[0], const_cast<void*>(sendto_original), const_cast<void*>(&__replacement_sendto))
+	construct_jmp_instruction((void*)&sendto_new_bytes[0], (void*)(sendto_original), (void*)(&__replacement_sendto))
 
 	//Remove readonly restriction
-	if(!VirtualProtect(const_cast<void*>(sendto_original), BYTES_SIZE, PAGE_READWRITE, &tmp))
+	if(!VirtualProtect((void*)(sendto_original), BYTES_SIZE, PAGE_READWRITE, &tmp))
 	{
 		UTIL_ConsolePrintf("Couldn't initialize sendto hook, VirtualProtect failed: %i.  Exiting...\n", GetLastError());
 		return(false);
