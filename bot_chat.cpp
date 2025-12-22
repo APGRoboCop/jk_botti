@@ -247,7 +247,7 @@ static int BotChatTrimTag(const char *original_name, char *out_name, int sizeof_
 
    BotTrimBlanks(out_name, in_name, sizeof(in_name));
 
-   if (strlen(in_name) == 0)  // is name just a tag?
+   if (in_name != nullptr && in_name[0] == '\0')  // is name just a tag?
    {
 	  safe_strcopy(in_name, sizeof(in_name), original_name);
 	  

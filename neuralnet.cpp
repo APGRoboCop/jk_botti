@@ -427,7 +427,9 @@ int main()
 
 	fast_random_seed(time(nullptr) ^ long(&diff) ^ long(&main));
 
-	CNeuralNet *nnet = new CNeuralNet(1, 1, 1, 4);
+	CNeuralNet* nnet = new CNeuralNet(1, 1, 1, 4);
+	delete nnet; // Ensure proper cleanup if allocated on the heap - [APG]RoboCop[CL]
+
 	CPopulation population = CPopulation(25, nnet->get_num_weights());
 	CGeneticAlgorithm genalg(0.2, 0.7);
 
